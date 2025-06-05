@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Offline QR Code Generator</title>
+    <style>
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.8); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-5px); }
+        }
+
+        .background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('qr11.jpg') no-repeat center center fixed;
+            background-size: cover;
+            z-index: -2;
+        }
+
+        .container {
+            background: rgba(0, 0, 0, 0.75);
+            padding: 25px;
+            border-radius: 12px;
+            text-align: center;
+            max-width: 420px;
+            width: 100%;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 1;
+        }
+
+        h1 {
+            color: #ffcccb;
+            margin-bottom: 15px;
+        }
+
+        .input-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+            gap: 10px;
+        }
+
+        textarea {
+            width: 90%;
+            height: 80px;
+            padding: 12px;
+            border: 2px solid #ffcccb;
+            border-radius: 5px;
+            font-size: 14px;
+            letter-spacing: -0.3px;
+            outline: none;
+            resize: none;
+            background-color: rgba(255, 255, 255, 0.9);
+            transition: border 1.5s ease, box-shadow 0.3s ease-in-out;
+        }
+
+        textarea:focus {
+            border-color: #ff4d6d;
+            box-shadow: 0 0 10px rgba(255, 77, 109, 0.8);
+        }
+
+        .b1 {
+            width: 90%;
+            padding: 12px;
+            background-color: #ff4d6d;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background 0.3s ease, transform 0.2s;
+        }
+
+        .b1:hover {
+            background-color: #e63950;
+            transform: scale(1.05);
+        }
+
+        .b1:active {
+            animation: bounce 0.3s ease-in-out;
+        }
+
+        #qrcode {
+            margin-top: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 15px;
+            border: 2px dashed #ffcccb;
+            border-radius: 10px;
+            min-height: 200px;
+            background: rgba(255, 255, 255, 0.2);
+            opacity: 0;
+        }
+
+        #qrcode.show {
+            animation: fadeIn 0.5s ease-in-out forwards;
+        }
+
+        /* Go Back Button at Bottom */
+        .bottom-button-container {
+            position: absolute;
+            bottom: 20px;
+            width: 100%;
+            text-align: center;
+        }
+
+        .bottom-button {
+            width: 90%;
+            max-width: 420px;
+            padding: 12px;
+            background-color: rgba(0, 0, 0, 0.75);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background 0.3s ease, transform 0.2s;
+        }
+
+        .bottom-button:hover {
+            background-color:rgba(0, 0, 0, 0.75);
+            transform: scale(1.05);
+        }
+    </style>
+</head>
+<body>
+    <div class="background"></div>
+    <div class="container">
+        <h1>QR Code Generator</h1>
+        <div class="input-container">
+            <textarea id="text" placeholder="Enter text or URL..." maxlength="400"></textarea>
+            <button class="b1" onclick="generateQrcode()">Generate QR Code</button>
+        </div>
+        <div id="qrcode"></div>
+    </div>
+
+    <!-- Go Back Button at Bottom of Page -->
+    <div class="bottom-button-container">
+        <button class="bottom-button" onclick="goBack()">Go Back</button>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+
+    <script>
+        function generateQrcode() {
+            const text = document.getElementById("text").value.trim();
+            const qrCodeContainer = document.getElementById("qrcode");
+            qrCodeContainer.innerHTML = "";
+            qrCodeContainer.classList.remove("show");
+
+            if (text !== "") {
+                new QRCode(qrCodeContainer, {
+                    text: unescape(encodeURIComponent(text)), 
+                    width: 250,
+                    height: 250,
+                    correctLevel: QRCode.CorrectLevel.H,
+                    version: 10
+                });
+                setTimeout(() => qrCodeContainer.classList.add("show"), 100);
+            }
+        }
+
+        function goBack() {
+            window.location.href = "index.html";
+        }
+    </script>
+</body>
+</html>
