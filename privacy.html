@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Privacy Settings</title>
+  <style>
+    /* Background image setup */
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: url('privacy.jpg') no-repeat center center fixed;
+      background-size: cover;
+      color: #333;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+    /* Container with semi-transparent background */
+    .container {
+      max-width: 700px;
+      width: 100%;
+      background: rgba(255, 255, 255, 0.85);
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+    }
+    h1 {
+      margin-bottom: 20px;
+      color: #111;
+      text-align: center;
+    }
+    .section {
+      margin-bottom: 25px;
+    }
+    .section h3 {
+      margin-bottom: 10px;
+      color: #222;
+    }
+    label {
+      display: flex;
+      align-items: center;
+      margin: 8px 0;
+      font-weight: 600;
+    }
+    input[type="checkbox"] {
+      margin-right: 10px;
+      width: 18px;
+      height: 18px;
+      cursor: pointer;
+    }
+    .save-btn {
+      padding: 12px 20px;
+      background-color: #0073e6;
+      border: none;
+      color: white;
+      font-size: 16px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.3s;
+      margin-top: 20px;
+      width: 100%;
+      font-weight: bold;
+    }
+    .save-btn:hover {
+      background-color: #005bb5;
+    }
+    .back-btn {
+      margin-top: 30px;
+      padding: 10px 20px;
+      background-color: #666;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 16px;
+      transition: background 0.3s;
+      align-self: center;
+      width: 150px;
+      font-weight: 600;
+      margin-bottom: 50px;
+      background-color: black;
+      color: white;
+    }
+    .back-btn:hover {
+      background-color: #444;
+    }
+    .note {
+      font-size: 13px;
+      color: #555;
+      margin-top: 5px;
+      font-style: italic;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <h1>Privacy & Data Settings</h1>
+
+    <div class="section">
+      <h3>Account Privacy</h3>
+      <label><input type="checkbox" checked> Make profile visible to others</label>
+      <label><input type="checkbox"> Allow search engines to link to your profile</label>
+    </div>
+
+    <div class="section">
+      <h3>Data Collection</h3>
+      <label><input type="checkbox" checked> Allow data collection for analytics</label>
+      <label><input type="checkbox"> Allow data sharing with third parties</label>
+      <p class="note">We never sell your personal information. This is only for enhancing experience.</p>
+    </div>
+
+    <div class="section">
+      <h3>Personalization</h3>
+      <label><input type="checkbox" checked> Personalize content based on usage</label>
+      <label><input type="checkbox"> Send personalized recommendations</label>
+    </div>
+
+    <div class="section">
+      <h3>Communication</h3>
+      <label><input type="checkbox" checked> Receive email updates and offers</label>
+      <label><input type="checkbox"> Receive push notifications</label>
+    </div>
+
+    <button class="save-btn" onclick="savePrivacySettings()">Save Settings</button>
+
+    <button class="back-btn" onclick="goBack()">← Back</button>
+  </div>
+
+  <script>
+    function savePrivacySettings() {
+      alert("Your privacy settings have been saved.");
+      // Save settings logic here if needed
+    }
+
+    function goBack() {
+      window.location.href = 'index.html';
+    }
+  </script>
+
+</body>
+</html>

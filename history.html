@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Saved QR Codes</title>
+  <style>
+    body {
+      background: #1a1d2e;
+      color: white;
+      font-family: sans-serif;
+      padding: 20px;
+      position: relative;
+    }
+
+    .back-button {
+      margin-top: 5px;
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      background-color: #ff512f;
+      color: white;
+      border: none;
+      padding: 10px 15px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: bold;
+      transition: background 0.3s;
+    }
+
+    .back-button:hover {
+      background-color: #dd2476;
+    }
+
+    h2 {
+      margin-top: 60px;
+    }
+
+    .qr-entry {
+      background: white;
+      color: black;
+      margin-bottom: 10px;
+      padding: 10px;
+      border-left: 4px solid #ff512f;
+      border-radius: 6px;
+    }
+
+    .clear-button {
+      margin-right: 65px;
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      background-color: #444;
+      color: white;
+      border: none;
+      padding: 10px 15px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: bold;
+      transition: background 0.3s;
+    }
+
+    .clear-button:hover {
+      background-color: #666;
+    }
+  </style>
+</head>
+<body>
+  <button class="clear-button" onclick="clearHistory()">Clear</button>
+  <button class="back-button" onclick="history.back()">Back</button>
+  <h2>History</h2>
+
+  <div id="savedList"></div>
+
+  <script>
+    const saved = JSON.parse(localStorage.getItem("savedQRCodes")) || [];
+    const list = document.getElementById("savedList");
+    localStorage.removeItem("savedQRCodes");
+
+    // Show message
+    list.innerHTML = "<p>All saved QR codes have been cleared.</p>";
+
+    if (saved.length === 0) {
+      list.innerHTML = "<p>No saved QR codes found.</p>";
+    } else {
+      ssaved.forEach((code, i) => {
+        const div = document.createElement("div");
+        div.className = "qr-entry";
+
+        div.innerHTML = `
+          <strong>QR #${i + 1}:</strong><br>${code}
+          <button class="delete-btn" onclick="deleteSaved(${i})">🗑️</button>
+        `;
+
+        list.appendChild(div);
+      });
+
+      function deleteSaved(index) {
+        const saved = JSON.parse(localStorage.getItem("savedQRCodes")) || [];
+        saved.splice(index, 1); // Remove the item at the given index
+        localStorage.setItem("savedQRCodes", JSON.stringify(saved));
+        location.reload(); // Refresh to update the list
+      }
+    }
+
+    const historyData = JSON.parse(localStorage.getItem("historyQRCodes")) || [];
+
+    if (historyData.length === 0) {
+      list.innerHTML = "<p>No QR code history found.</p>";
+    } else {
+      historyData.forEach((code, i) => {
+        const div = document.createElement("div");
+        div.className = "qr-entry";
+        div.innerHTML = `<strong>QR #${i + 1}:</strong><br>${code}`;
+        list.appendChild(div);
+      });
+    }
+
+    function clearHistory() {
+      localStorage.removeItem("historyQRCodes");
+      location.reload();
+    }
+  </script>
+</body>
+</html>

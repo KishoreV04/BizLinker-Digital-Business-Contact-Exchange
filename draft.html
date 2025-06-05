@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Draft QR Codes</title>
+  <style>
+    body {
+      background: #1a1d2e;
+      color: white;
+      font-family: sans-serif;
+      padding: 20px;
+      position: relative;
+    }
+
+    .back-button {
+      margin-top: 65px;
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      background-color: #ff512f;
+      color: white;
+      border: none;
+      padding: 10px 15px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: bold;
+      transition: background 0.3s;
+    }
+
+    .back-button:hover {
+      background-color: #dd2476;
+    }
+
+    h2 {
+      margin-top: 60px;
+    }
+
+    .qr-entry {
+      background: white;
+      color: black;
+      margin-bottom: 10px;
+      padding: 10px;
+      border-left: 4px solid #ff512f;
+      border-radius: 6px;
+      position: relative;
+    }
+
+    .delete-btn {
+      background: transparent;
+      border: none;
+      color: red;
+      font-size: 18px;
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      cursor: pointer;
+    }
+
+    .delete-btn:hover {
+      color: #ff512f;
+    }
+  </style>
+</head>
+<body>
+  <button class="back-button" onclick="window.location.href='index.html'">Back</button>
+
+  <h2>Deleted Messages (Drafts)</h2>
+  <div id="draftList"></div>
+
+  <script>
+    const drafts = JSON.parse(localStorage.getItem("draftQRCodes")) || [];
+    const list = document.getElementById("draftList");
+
+    if (drafts.length === 0) {
+      list.innerHTML = "<p>No deleted QR codes found.</p>";
+    } else {
+      drafts.forEach((code, i) => {
+        const div = document.createElement("div");
+        div.className = "qr-entry";
+        div.innerHTML = `
+          <strong>QR #${i + 1}:</strong><br>${code}
+          <button class="delete-btn" onclick="deleteDraft(${i})">🗑️</button>
+        `;
+        list.appendChild(div);
+      });
+    }
+
+    function deleteDraft(index) {
+      const drafts = JSON.parse(localStorage.getItem("draftQRCodes")) || [];
+      drafts.splice(index, 1);
+      localStorage.setItem("draftQRCodes", JSON.stringify(drafts));
+      location.reload();
+    }
+  </script>
+</body>
+</html>

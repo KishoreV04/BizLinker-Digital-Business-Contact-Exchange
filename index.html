@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QR Code Scanner</title>
+
+    <!-- ✅ FIXED: jsQR script CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js"></script>
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap');
+
+        body {
+            
+            font-family: 'Roboto', sans-serif;
+            background: #1a1d2e;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            text-align: center;
+            margin: 0;
+            transition: background 0.3s ease;
+        }
+        
+
+        video {
+            width: 100%;
+            max-width: 500px;
+            height: 300px;
+            background: black;
+            border-radius: 20px;
+        }
+
+        button {
+            padding: 12px 24px;
+            font-size: 16px;
+            font-weight: bold;
+            color: white;
+            background: linear-gradient(45deg, #ff512f, #dd2476);
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 20px;
+        }
+
+        button:hover {
+            background: linear-gradient(45deg, #dd2476, #ff512f);
+            transform: scale(1.05);
+        }
+
+        .top-bar {
+            position: absolute;
+            top: 10px;
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            padding: 0 20px;
+        }
+
+        .nav-icon  {
+            font-size: 34px;
+            cursor: pointer;
+            color: rgb(176, 72, 72);
+            margin-left: 20px;
+        }
+
+        .profile-icon {
+            font-size: 34px;
+            cursor: pointer;
+            color:rgb(176, 72, 72);
+            margin-right: 20px;
+            margin-top: 10p;
+        }
+
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 2;
+        }
+
+        .overlay-content {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            width: 250px;
+        }
+
+        .overlay button {
+            display: block;
+            width: 100%;
+            margin: 5px 0;
+            padding: 10px;
+            background: black;
+            border: none;
+            color: white;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+
+        .close-btn {
+            background: black;
+        }
+
+        #profilePic {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+        }
+
+        input[type="file"] {
+            margin-top: 10px;
+        }
+
+        .dark-mode {
+            background: #121212;
+            color: white;
+        }
+        .sidebar {
+      width: 220px;
+      background: #1e1e2f;
+      color: white;
+      height: 100vh;
+      padding: 20px;
+      box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+    }
+
+    .sidebar h3 {
+      margin-top: 0;
+    }
+
+    .sidebar button {
+      display: block;
+      background: none;
+      border: none;
+      color: white;
+      font-size: 16px;
+      padding: 10px 0;
+      text-align: left;
+      width: 100%;
+      cursor: pointer;
+    }
+
+    .sidebar button:hover {
+      background: #333344;
+    }
+
+    .content {
+      flex: 1;
+      padding: 20px;
+    }
+
+    .qr-entry {
+      background: #ffffff;
+      padding: 15px;
+      margin-bottom: 10px;
+      border-left: 5px solid #ff512f;
+      border-radius: 5px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    }
+    body.dark {
+    background-color: #1a1d2e;
+    color: white;
+  }
+  body.light {
+    background-color: white;
+    color: black;
+  }
+  .pro{
+    color: grey;
+    font-family:Georgia, 'Times New Roman', Times, serif;
+  }
+    </style>
+</head>
+
+
+<body>
+
+    <!-- Top Navigation -->
+    <div class="top-bar">
+        <span class="nav-icon" onclick="openOverlay()">☰</span>
+        <span class="profile-icon" onclick="openProfileOverlay()"> ⚙️</span>
+
+    </div>
+
+    <h1>QR Code Scanner</h1>
+    <video id="video" autoplay></video>
+    <canvas id="canvas" hidden></canvas>
+
+    <!-- Buttons -->
+    <button id="startBtn">Start Scanning</button>
+    <button id="stopBtn" style="display:none;">Stop Scanning</button>
+    <button id="nextPageBtn">Go to Next Page</button>
+
+    <!-- Overlay Menu -->
+    <div id="mainContent" class="content-area">
+    <div id="overlay" class="overlay">
+        <div class="overlay-content">
+            <h2>Menu</h2>
+            <button onclick="location.href='saved.html'">Saved</button>
+            <button onclick="location.href='draft.html'">Draft</button>
+            <button onclick="location.href='history.html'">History</button>
+
+   
+            <button class="close-btn" onclick="closeOverlay()">Close</button>
+        </div>
+    </div>
+</div>
+
+
+    <!-- Profile Overlay -->
+    <div id="profileOverlay" class="overlay">
+        <div class="overlay-content">
+            <h2 class="pro">Settings</h2>
+            <button onclick="location.href='profile.html'">Edit Profile</button>
+            <button onclick="window.location.href='settings.html'">Toggle Dark Mode</button>
+            <button onclick="window.location.href='privacy.html'">Privacy Settings</button>
+            <button onclick="confirmLogout()">Logout</button>
+            <button class="close-btn" onclick="closeProfileOverlay()">Close</button>
+        </div>
+    </div>
+
+    <script>
+        let videoStream;
+        let scanning = false;
+        const videoElement = document.getElementById("video");
+        const canvasElement = document.getElementById("canvas");
+        const canvasContext = canvasElement.getContext("2d");
+
+        async function startCamera() {
+            try {
+                videoStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } });
+                videoElement.srcObject = videoStream;
+
+                videoElement.onloadedmetadata = () => {
+                    videoElement.play();
+                    scanning = true;
+                    document.getElementById("startBtn").style.display = "none";
+                    document.getElementById("stopBtn").style.display = "inline-block";
+                    requestAnimationFrame(scanQRCodeLoop);
+                };
+            } catch (error) {
+                alert("Camera access error: " + error.message);
+                console.error(error);
+            }
+        }
+
+        function stopCamera() {
+            if (videoStream) {
+                const tracks = videoStream.getTracks();
+                tracks.forEach(track => track.stop());
+            }
+            scanning = false;
+            document.getElementById("startBtn").style.display = "inline-block";
+            document.getElementById("stopBtn").style.display = "none";
+        }
+
+        function scanQRCodeLoop() {
+            if (!scanning) return;
+
+            if (videoElement.readyState === videoElement.HAVE_ENOUGH_DATA) {
+                canvasElement.width = videoElement.videoWidth;
+                canvasElement.height = videoElement.videoHeight;
+                canvasContext.drawImage(videoElement, 0, 0, canvasElement.width, canvasElement.height);
+
+                const imageData = canvasContext.getImageData(0, 0, canvasElement.width, canvasElement.height);
+                const code = jsQR(imageData.data, imageData.width, imageData.height);
+
+                if (code) {
+                    localStorage.setItem("scannedQRCode", code.data);
+                    window.location.href = "result.html";
+
+                stopCamera();
+                    return;
+                }
+            }
+
+            requestAnimationFrame(scanQRCodeLoop);
+        }
+        function showSaved() {
+  const saved = JSON.parse(localStorage.getItem("savedQRCodes")) || [];
+  const content = document.getElementById("mainContent");
+  content.innerHTML = "<h2>Saved QR Codes</h2>";
+
+  if (saved.length === 0) {
+    content.innerHTML += "<p>No saved QR codes found.</p>";
+  } else {
+    saved.forEach((code, index) => {
+      content.innerHTML += `<div class="qr-entry"><strong>QR ${index + 1}:</strong> ${code}</div>`;
+    });
+  }
+
+  closeOverlay(); // Hide menu
+}
+window.onload = () => {
+    const theme = localStorage.getItem('theme') || 'dark';
+    document.body.classList.add(theme);
+  };
+
+function showDrafts() {
+  const content = document.getElementById("mainContent");
+  content.innerHTML = "<h2>Draft QR Codes</h2><p>No drafts yet. (Coming soon...)</p>";
+  closeOverlay(); // Hide menu
+}
+
+function showHistory() {
+  const content = document.getElementById("mainContent");
+  content.innerHTML = "<h2>Scan History</h2><p>No history data yet. (Coming soon...)</p>";
+  closeOverlay(); // Hide menu
+}
+
+
+        document.getElementById("startBtn").addEventListener("click", startCamera);
+        document.getElementById("stopBtn").addEventListener("click", stopCamera);
+        document.getElementById("nextPageBtn").addEventListener("click", () => window.location.href = "home.html");
+
+        function openOverlay() { document.getElementById("overlay").style.display = "flex"; }
+        function closeOverlay() { document.getElementById("overlay").style.display = "none"; }
+        function openProfileOverlay() { document.getElementById("profileOverlay").style.display = "flex"; }
+        function closeProfileOverlay() { document.getElementById("profileOverlay").style.display = "none"; }
+
+        function toggleDarkMode() { document.body.classList.toggle("dark-mode"); }
+        function confirmLogout() { if (confirm("Are you sure you want to logout?")) alert("Logged Out!"); }
+        
+        function showSaved() {
+        const saved = JSON.parse(localStorage.getItem("savedQRCodes")) || [];
+      const content = document.getElementById("mainContent");
+      content.innerHTML = "<h2>Saved QR Codes</h2>";
+
+      if (saved.length === 0) {
+        content.innerHTML += "<p>No saved QR codes found.</p>";
+      } else {
+        saved.forEach((code, index) => {
+          content.innerHTML += `<div class="qr-entry"><strong>QR #${index + 1}:</strong><br>${code}</div>`;
+        });
+      }
+    }
+
+    
+   </script>
+</body>
+</html>

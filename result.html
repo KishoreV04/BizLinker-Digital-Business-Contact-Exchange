@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>QR Scan Result</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    body {
+  font-family: 'Roboto', sans-serif;
+  background: url('https://images.unsplash.com/photo-1507525428034-b723cf961d3e') no-repeat center center fixed;
+  background-size: cover;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  color: #fff;
+  flex-direction: column;
+}
+
+.result-box {
+  background: rgba(42, 47, 74, 0.6);
+  backdrop-filter: blur(10px);
+  padding: 30px 40px;
+  border-radius: 20px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+  text-align: center;
+  max-width: 400px;
+  width: 90%;
+}
+
+h2 {
+  margin-bottom: 15px;
+  font-size: 28px;
+  color: #ffffff;
+}
+
+#qrResult {
+  font-size: 18px;
+  word-wrap: break-word;
+  margin-bottom: 20px;
+}
+
+button {
+  margin-top: 10px;
+  padding: 10px 20px;
+  border: none;
+  background: #ff512f;
+  color: white;
+  font-weight: bold;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: 0.3s ease;
+}
+
+button:hover {
+  background: linear-gradient(135deg, #dd2476, #ff512f);
+  transform: scale(1.05);
+}
+
+.button-row {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  margin-top: 15px;
+}
+
+.small-button {
+  width: 100px;
+}
+
+/* Back button fixed at bottom center */
+.back-button-container {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  text-align: center;
+}
+
+.back-button-container button {
+  background-color: #444;
+  color: #fff;
+  padding: 10px 25px;
+  font-size: 14px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+@media (max-width: 500px) {
+  .result-box {
+    padding: 20px;
+  }
+
+  h2 {
+    font-size: 22px;
+  }
+
+  #qrResult {
+    font-size: 16px;
+  }
+}
+
+  </style>
+</head>
+<body>
+  <div class="result-box">
+    <h2>Scanned QR Code</h2>
+    <p id="qrResult">Loading...</p>
+
+    <button onclick="window.location.href='index.html'">Scan Another</button>
+
+    <div class="button-row">
+      <button class="small-button" onclick="saveQRCode()">Save</button>
+      <button class="small-button" onclick="deleteQRCode()">Delete</button>
+    </div>
+  </div>
+
+  <!-- Fixed Bottom Back Button -->
+  <div class="back-button-container">
+    <button onclick="goBack()">⬅ Back</button>
+  </div>
+
+  <script>
+    const resultElement = document.getElementById("qrResult");
+  
+    function loadQRCode() {
+      const result = localStorage.getItem("scannedQRCode");
+      resultElement.textContent = result || "No QR Code found.";
+  
+      // ✅ Always save to history regardless of Save/Delete
+      if (result) {
+        const history = JSON.parse(localStorage.getItem("historyQRCodes")) || [];
+        history.push(result); // allow duplicates to record full history
+        localStorage.setItem("historyQRCodes", JSON.stringify(history));
+      }
+    }
+  
+    function saveQRCode() {
+      const result = localStorage.getItem("scannedQRCode");
+      if (!result) {
+        alert("Nothing to save.");
+        return;
+      }
+  
+      const saved = JSON.parse(localStorage.getItem("savedQRCodes")) || [];
+      if (!saved.includes(result)) {
+        saved.push(result);
+        localStorage.setItem("savedQRCodes", JSON.stringify(saved));
+        alert("QR Code saved to Saved section!");
+      } else {
+        alert("This QR Code is already saved.");
+      }
+  
+      window.location.href = "saved.html";
+    }
+  
+    function deleteQRCode() {
+      const result = localStorage.getItem("scannedQRCode");
+      if (!result) {
+        alert("Nothing to delete.");
+        return;
+      }
+  
+      const drafts = JSON.parse(localStorage.getItem("draftQRCodes")) || [];
+      if (!drafts.includes(result)) {
+        drafts.push(result);
+        localStorage.setItem("draftQRCodes", JSON.stringify(drafts));
+        alert("QR Code moved to Draft section!");
+      } else {
+        alert("This QR Code is already in Draft.");
+      }
+  
+      window.location.href = "draft.html";
+    }
+  
+    function goBack() {
+      window.location.href = "index.html";
+    }
+  
+    window.onload = loadQRCode;
+  </script>
+  
+  
+</body>
+</html>

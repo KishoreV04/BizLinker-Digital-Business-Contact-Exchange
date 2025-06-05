@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Business Profile vCard QR Code Generator</title>
+  <script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #1a1d2e;
+      color: white;
+      padding: 20px;
+      margin: 0;
+    }
+    h1 {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+    .container {
+      display: flex;
+      gap: 30px;
+      max-width: 1000px;
+      margin: auto;
+      flex-wrap: wrap;
+    }
+    .form-container, .qr-container {
+      background: #2c2f48;
+      border-radius: 12px;
+      box-shadow: 0 0 12px rgba(255, 81, 47, 0.5);
+      padding: 20px;
+      flex: 1 1 45%;
+    }
+    .qr-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    label {
+      display: block;
+      margin-top: 10px;
+      font-size: 14px;
+    }
+    input, textarea {
+      width: 100%;
+      padding: 8px;
+      margin-top: 5px;
+      border-radius: 6px;
+      border: none;
+      background: #3a3f5a;
+      color: white;
+      font-size: 14px;
+    }
+    .buttons {
+      display: flex;
+      gap: 10px;
+      margin-top: 20px;
+    }
+    button {
+      flex: 1;
+      padding: 10px;
+      border: none;
+      border-radius: 8px;
+      background: linear-gradient(45deg, #ff512f, #dd2476);
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+      font-size: 14px;
+    }
+    button:hover {
+      background: linear-gradient(45deg, #dd2476, #ff512f);
+    }
+    #qrcode {
+      background: white;
+      padding: 10px;
+      border-radius: 10px;
+      margin-top: 15px;
+    }
+  </style>
+</head>
+<body>
+
+<h1>Business Profile & vCard QR Code Generator</h1>
+
+<div class="container">
+  <div class="form-container">
+    <form id="profileForm" onsubmit="return false;">
+      <label>Name</label>
+      <input type="text" id="name" readonly>
+
+      <label>Email</label>
+      <input type="email" id="email" readonly>
+
+      <label>Phone</label>
+      <input type="text" id="phone" readonly>
+
+      <label>LinkedIn</label>
+      <input type="url" id="linkedin" readonly>
+
+      <label>GitHub</label>
+      <input type="url" id="github" readonly>
+
+      <label>Experience (years)</label>
+      <input type="number" id="experience" readonly>
+
+      <label>Age</label>
+      <input type="number" id="age" readonly>
+
+      <label>Address</label>
+      <textarea id="address" rows="2" readonly></textarea>
+
+      <label>Company Name</label>
+      <input type="text" id="company" readonly>
+
+      <label>Year Started</label>
+      <input type="number" id="yearStarted" readonly>
+
+      <div class="buttons">
+        <button type="button" onclick="editProfile()">Edit</button>
+        <button type="button" onclick="saveProfile()">Save</button>
+        <button type="button" onclick="generateQRCode()">Generate QR Code</button>
+        <button type="button" onclick="window.location.href='index.html'">Back</button>
+      </div>
+    </form>
+  </div>
+
+  <div class="qr-container">
+    <h2>QR Code</h2>
+    <div id="qrcode"></div>
+  </div>
+</div>
+
+<script>
+  const fields = ["name", "email", "phone", "linkedin", "github", "experience", "age", "address", "company", "yearStarted"];
+
+  // Get data from inputs
+  function getProfileData() {
+    const data = {};
+    fields.forEach(id => {
+      data[id] = document.getElementById(id).value.trim();
+    });
+    return data;
+  }
+
+  // Save profile data to localStorage
+  function saveProfile() {
+    const data = getProfileData();
+    localStorage.setItem("profileData", JSON.stringify(data));
+    alert("Saved");
+    setReadOnly(true);
+  }
+
+  // Load profile data from localStorage
+  function loadProfile() {
+    const data = JSON.parse(localStorage.getItem("profileData") || "{}");
+    fields.forEach(id => {
+      if (data[id]) document.getElementById(id).value = data[id];
+    });
+    setReadOnly(true);
+  }
+
+  // Make inputs editable or readonly
+  function setReadOnly(readonly) {
+    fields.forEach(id => {
+      document.getElementById(id).readOnly = readonly;
+    });
+  }
+
+  function editProfile() {
+    setReadOnly(false);
+  }
+
+  // Generate vCard string from data
+  function generateVCard(data) {
+    return `BEGIN:VCARD
+VERSION:3.0
+N:${escapeVCard(data.name)};;;;
+FN:${escapeVCard(data.name)}
+TEL;TYPE=cell:${escapeVCard(data.phone)}
+EMAIL:${escapeVCard(data.email)}
+ORG:${escapeVCard(data.company)}
+TITLE:${escapeVCard(data.experience ? data.experience + " years experience" : "")}
+ADR:${escapeVCard(data.address)}
+URL:${escapeVCard(data.linkedin)}
+END:VCARD`.trim();
+  }
+
+  // Escape special characters for vCard format
+  function escapeVCard(text) {
+    if (!text) return "";
+    return text.replace(/\n/g, "\\n").replace(/,/g, "\\,").replace(/;/g, "\\;");
+  }
+
+  // Generate QR Code
+  function generateQRCode() {
+    const data = getProfileData();
+    const vcard = generateVCard(data);
+
+    const qrDiv = document.getElementById("qrcode");
+    qrDiv.innerHTML = "";
+    QRCode.toCanvas(vcard, { width: 200 }, function (err, canvas) {
+      if (err) {
+        alert("QR Code generation failed.");
+        return;
+      }
+      qrDiv.appendChild(canvas);
+    });
+  }
+
+  // On page load
+  window.onload = loadProfile;
+</script>
+
+</body>
+</html>

@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Saved QR Codes</title>
+  <style>
+    body {
+      background: #1a1d2e;
+      color: white;
+      font-family: sans-serif;
+      padding: 20px;
+      position: relative;
+    }
+
+    .back-button {
+      margin-top: 60px;
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      background-color: #ff512f;
+      color: white;
+      border: none;
+      padding: 10px 15px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: bold;
+      transition: background 0.3s;
+    }
+
+    .back-button:hover {
+      background-color: #dd2476;
+    }
+
+    h2 {
+      margin-top: 60px;
+    }
+
+    .qr-entry {
+      background: white;
+      color: black;
+      margin-bottom: 10px;
+      padding: 10px;
+      border-left: 4px solid #ff512f;
+      border-radius: 6px;
+      position: relative;
+    }
+
+    .delete-btn {
+      background: transparent;
+      border: none;
+      color: red;
+      font-size: 18px;
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      cursor: pointer;
+    }
+
+    .delete-btn:hover {
+      color: #ff512f;
+    }
+  </style>
+</head>
+<body>
+  <h2>Saved Messages</h2>
+  <div id="savedList"></div>
+
+  <button class="back-button" onclick="window.location.href='index.html'">Back</button>
+
+  <script>
+    const saved = JSON.parse(localStorage.getItem("savedQRCodes")) || [];
+    const list = document.getElementById("savedList");
+
+    if (saved.length === 0) {
+      list.innerHTML = "<p>No saved QR codes found.</p>";
+    } else {
+      saved.forEach((code, i) => {
+        const div = document.createElement("div");
+        div.className = "qr-entry";
+        div.innerHTML = `
+          <strong>QR #${i + 1}:</strong><br>${code}
+          <button class="delete-btn" onclick="deleteSaved(${i})">🗑️</button>
+        `;
+        list.appendChild(div);
+      });
+    }
+
+    function deleteSaved(index) {
+      const saved = JSON.parse(localStorage.getItem("savedQRCodes")) || [];
+      saved.splice(index, 1);
+      localStorage.setItem("savedQRCodes", JSON.stringify(saved));
+      location.reload();
+    }
+  </script>
+</body>
+</html>
